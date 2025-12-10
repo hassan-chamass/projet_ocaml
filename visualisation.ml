@@ -8,7 +8,7 @@ let draw_airplane = fun airplane ->
   let x, y = get_position airplane in
   Graphics.set_color airplane.color;
 
- (* Dessine le cercle de l'avion *)
+  (* Dessine le cercle de l'avion *)
   Graphics.fill_circle (int_of_float x) (int_of_float y) 5;
   
   (* Calcul de la flèche *)
@@ -25,7 +25,7 @@ let draw_airplane = fun airplane ->
 
 
 
-(* Dessine un bouton simple *)
+  (* Dessine un bouton simple *)
 let draw_button = fun x y w h label color ->
   Graphics.set_color color;
   Graphics.fill_rect x y w h;
@@ -58,7 +58,7 @@ let rec loop = fun airplanes current_id random_add ->
 
   (* Spawn automatique si activé *)
   let airplanes, next_id =
-    if random_add && Random.float 1.0 < 0.1 then
+    if random_add && Random.float 1.0 < 0.01 then
       let new_plane = generate_one_airplane airplanes current_id in
       (new_plane :: airplanes, current_id + 1)
     else
@@ -104,44 +104,20 @@ let () =
 
   let airplanes = generate_airplanes n_airplanes in
   loop airplanes n_airplanes false
-
+  
 
 (*
-let () =
-  open_graph " 600x400"; (* fenêtre 600x400 *)
-  auto_synchronize false;
+Commandes pour lancer:
 
-  let x = ref 300 in
-  let y = ref 200 in
-  let dx = ref 2 in
-  let dy = ref 3 in
-  let radius = 20 in
-
-  while true do
-    (* efface l'ancien cercle *)
-    set_color white;
-    fill_circle !x !y radius;
-
-    (* met à jour la position *)
-    x := !x + !dx;
-    y := !y + !dy;
-
-    (* rebond si on touche un bord *)
-    if !x + radius >= 600 || !x - radius <= 0 then dx := - !dx;
-    if !y + radius >= 400 || !y - radius <= 0 then dy := - !dy;
-
-    (* dessine le cercle à la nouvelle position *)
-    set_color red;
-    fill_circle !x !y radius;
-
-    synchronize (); (* met à jour l'affichage *)
-    Unix.sleepf 0.01; (* petit délai pour voir le mouvement *)
-  done
-
-
- Commandes pour lancer:
+opam switch create graphics 4.14.1
+opam install graphics
+opam switch graphics
+opam install ocamlfind
 
 (& opam env) -split '\r?\n' | ForEach-Object { Invoke-Expression $_ }
+
 ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg visualisation.ml
+
 .\visualisation.exe
+
 *)
