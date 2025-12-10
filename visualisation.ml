@@ -104,7 +104,7 @@ let () =
 
   let airplanes = generate_airplanes n_airplanes in
   loop airplanes n_airplanes false
-  
+
 
 (*
 Commandes pour lancer:
@@ -116,8 +116,7 @@ opam install ocamlfind
 
 (& opam env) -split '\r?\n' | ForEach-Object { Invoke-Expression $_ }
 
-ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg visualisation.ml
-
+ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg avion.ml simulation.ml visualisation.ml
 .\visualisation.exe
 
 *)
