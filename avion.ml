@@ -1,31 +1,24 @@
+open Vecteurs
 
 
 type airplane = {
   id : int;
-  mutable x : float;
-  mutable y : float;
-  mutable vx : float;
-  mutable vy : float;
+  pos : vecteur;
+  speed : vecteur;
   color : Graphics.color
 }
 
-let create_airplane = fun id x y vx vy ->
+let create_airplane = fun id pos speed->
   let r = Random.int 256 in
   let g = Random.int 256 in
   let b = Random.int 256 in
   let color = Graphics.rgb r g b in
-  { id; x; y; vx; vy; color }
+  { id=id; pos=pos; speed=speed; color=color }
 
 let move_airplane = fun airplane dt ->
-    airplane.x <- airplane.x +. airplane.vx *. dt;
-    airplane.y <- airplane.y +. airplane.vy *. dt
+    airplane.pos.x <- airplane.pos.x +. airplane.speed.x *. dt;
+    airplane.pos.y <- airplane.pos.y +. airplane.speed.y *. dt
 
 let change_speed = fun airplane new_vx new_vy ->
-    airplane.vx <- new_vx;
-    airplane.vy <- new_vy
-
-let get_position = fun airplane ->
-    (airplane.x, airplane.y)
-
-let get_speed = fun airplane ->
-    (airplane.vx, airplane.vy)
+    airplane.speed.x <- new_vx;
+    airplane.speed.y <- new_vy

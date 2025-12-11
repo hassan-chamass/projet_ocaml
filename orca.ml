@@ -1,0 +1,1 @@
+let tau = 1 (*en s temps*)

@@ -1,23 +1,21 @@
 open Simulation
 open Avion
+open Vecteurs
 let n_airplanes = 3 
 
 
 
 let draw_airplane = fun airplane ->
-  let x, y = get_position airplane in
+  let x, y = airplane.pos.x, airplane.pos.y in
   Graphics.set_color airplane.color;
 
   (* Dessine le cercle de l'avion *)
   Graphics.fill_circle (int_of_float x) (int_of_float y) 5;
   
   (* Calcul de la flèche *)
-  let vx, vy = airplane.vx, airplane.vy in
-  let angle = atan2 vy vx in
-  let speed = sqrt (vx *. vx +. vy *. vy) in
-  let arrow_length = 1. *. speed in
-  let x_end = x +. arrow_length *. cos angle in
-  let y_end = y +. arrow_length *. sin angle in
+  let arrow_head = add airplane.pos airplane.speed in
+  let x_end, y_end = arrow_head.x, arrow_head.y in
+  
   
   (* Dessine la ligne/flèche *)
   Graphics.moveto (int_of_float x) (int_of_float y);
