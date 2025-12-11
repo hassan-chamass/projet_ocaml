@@ -99,7 +99,7 @@ let rec loop = fun airplanes current_id random_add ->
 
 let () =
   Random.self_init ();
-  Graphics.open_graph "1000x800";
+  Graphics.open_graph " 1000x800";
   Graphics.auto_synchronize false;
 
   let airplanes = generate_airplanes n_airplanes in
