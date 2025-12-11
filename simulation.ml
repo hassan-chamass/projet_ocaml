@@ -22,7 +22,7 @@ let generate_airplanes = fun n ->
     let direction_vect = sub target_pos pos in
     let speed = scale speed_norm (normalize direction_vect) in
     theta := !theta +. Float.pi /. 4.0 +. Random.float (Float.pi /. 8.0);
-    create_airplane id pos speed
+    create_airplane id pos speed target_pos
   in
   List.init n (fun i -> gen (i + 1))
 
@@ -36,17 +36,23 @@ let rec generate_one_airplane = fun airplanes id ->
     | 2 -> (Random.float window_width, 0.0)
     | _ -> (Random.float window_width, window_height)
   in
-  let tx = Random.float window_width in
-  let ty = Random.float window_height in
-  let dx = tx -. x in
-  let dy = ty -. y in
-  let dist = norm {x=dx;y=dy} in
-  let speed_norm = 50.0 +. Random.float 50.0 in
-  let vx = dx /. dist *. speed_norm  in
-  let vy = dy /. dist *. speed_norm in
+  let edge_target = ref (Random.int 4) in
+  while!edge_target = edge do
+    (edge_target := Random.int 4)
+  done;
+  let tx, ty =
+    match !edge_target with
+    | 0 -> (0.0, Random.float window_height)
+    | 1 -> (window_width, Random.float window_height)
+    | 2 -> (Random.float window_width, 0.0)
+    | _ -> (Random.float window_width, window_height)
+  in
   let pos = {x = x; y = y} in
-  let speed = {x = vx; y = vy} in
-  let airplane = create_airplane id pos speed in
+  let target_pos = { x = tx ; y = ty } in
+  let speed_norm = 50.0 +. Random.float 50.0 in
+  let direction_vect = sub target_pos pos in
+  let speed = scale speed_norm (normalize direction_vect) in
+  let airplane = create_airplane id pos speed target_pos in
 
   (* Vérifie les collisions avec les avions existants *)
   if List.exists (fun a ->
