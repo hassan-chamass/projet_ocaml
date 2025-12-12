@@ -2,9 +2,11 @@ open Vecteurs
 open Avion
 
 
-let window_width = 900.0
-let window_height = 700.0
-let min_distance = 30.0  (* distance minimale entre avions au spawn *)
+let window_width = 1000.0
+let window_height = 800.0
+let margin = 50.0   (* marge depuis les bords *)
+let min_distance = 30.0  (* distance minimale entre avions *)
+
 
 
 
@@ -31,10 +33,10 @@ let rec generate_one_airplane = fun airplanes id ->
   let edge = Random.int 4 in
   let x, y =
     match edge with
-    | 0 -> (0.0, Random.float window_height)
-    | 1 -> (window_width, Random.float window_height)
-    | 2 -> (Random.float window_width, 0.0)
-    | _ -> (Random.float window_width, window_height)
+    | 0 -> (margin, margin +. Random.float (window_height -. 2.0 *. margin))   (* gauche *)
+    | 1 -> (window_width -. margin, margin +. Random.float (window_height -. 2.0 *. margin))  (* droite *)
+    | 2 -> (margin +. Random.float (window_width -. 2.0 *. margin), margin)   (* haut *)
+    | _ -> (margin +. Random.float (window_width -. 2.0 *. margin), window_height -. margin)  (* bas *)
   in
   let edge_target = ref (Random.int 4) in
   while!edge_target = edge do
