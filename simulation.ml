@@ -64,8 +64,13 @@ let rec generate_one_airplane = fun airplanes id ->
   else
     airplane
 
+let in_window = fun airplane ->
+  let { x; y } = airplane.pos in
+  x >= 0.0 && x <= 1000.0 &&
+  y >= 0.0 && y <= 800.0
 
 
 let update_airplanes = fun airplanes dt ->
-  List.iter (fun airplane -> move_airplane airplane dt) airplanes
-
+  List.iter (fun airplane -> move_airplane airplane dt) airplanes;  
+  (* Filtre les avions hors de l'écran *)
+  List.filter in_window airplanes

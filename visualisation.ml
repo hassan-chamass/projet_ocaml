@@ -49,15 +49,25 @@ let is_inside = fun x y bx by bw bh ->
   x >= bx && x <= bx + bw && y >= by && y <= by + bh
 
 
+let print_airplanes airplanes =
+  Printf.printf "Airplanes ids: ";
+  List.iter (fun a -> Printf.printf "%d " a.id) airplanes;
+  print_endline ""
+
+
+
+
+
 let rec loop = fun airplanes current_id random_add ->
   (* Met à jour la simulation *)
-  update_airplanes airplanes 0.01;
+  let airplanes = update_airplanes airplanes 0.01 in  
+  print_airplanes airplanes;  (* <-- vérifie ici *)
   Unix.sleepf 0.05;
 
   (* Spawn automatique si activé *)
-  let airplanes, next_id =
+  let airplanes, new_id =
     if random_add && Random.float 1.0 < 0.01 then
-      let new_plane = generate_one_airplane airplanes current_id in
+      let new_plane = generate_one_airplane airplanes (current_id+1) in
       (new_plane :: airplanes, current_id + 1)
     else
       (airplanes, current_id)
@@ -71,15 +81,15 @@ let rec loop = fun airplanes current_id random_add ->
     let x, y = Graphics.mouse_pos () in
     (* Ajout manuel *)
     if is_inside x y 10 700 100 30 then(
-      let new_plane = generate_one_airplane airplanes next_id in
+      let new_plane = generate_one_airplane airplanes (new_id+1) in
       (* Attend que le bouton soit relâché pour éviter les multiples clics *)
       while Graphics.button_down () do () done;
-      loop (new_plane :: airplanes) (next_id + 1) random_add
+      loop (new_plane :: airplanes) (new_id + 1) random_add
     )
     (* Toggle random add *)
     else if is_inside x y 120 700 150 30 then(
       while Graphics.button_down () do () done;
-      loop airplanes next_id (not random_add)
+      loop airplanes new_id (not random_add)
     )
     (* Restart *)
     else if is_inside x y 280 700 100 30 then(
@@ -88,10 +98,10 @@ let rec loop = fun airplanes current_id random_add ->
       loop airplanes n_airplanes random_add
     )
     else
-      loop airplanes next_id random_add
+      loop airplanes new_id random_add
   )
   else
-    loop airplanes next_id random_add
+    loop airplanes new_id random_add
 
 
 
@@ -114,7 +124,7 @@ opam install ocamlfind
 
 (& opam env) -split '\r?\n' | ForEach-Object { Invoke-Expression $_ }
 
-ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg avion.ml simulation.ml visualisation.ml
+ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg vecteurs.ml avion.ml simulation.ml visualisation.ml 
 .\visualisation.exe
 
 *)
