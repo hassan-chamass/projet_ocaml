@@ -8,6 +8,12 @@ type vecteur = {
   mutable y : float
 }
 
+type droite = { 
+  m: float;
+  n: float 
+}
+
+
 let create_vector = fun x y ->
   {x=x; y=y}
 
