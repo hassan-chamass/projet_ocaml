@@ -1,7 +1,10 @@
 open Simulation
 open Avion
 open Geometrie
+open Orca
 let n_airplanes = 3 
+let tau = 5.0 
+let d = 60.0
 
 
 
@@ -31,7 +34,96 @@ let draw_button = fun x y w h label color ->
   Graphics.moveto (x + 10) (y + h / 2 - 5);
   Graphics.draw_string label
 
+                  (* Dessins pour ORCA *)
+let draw_droite_orientee = fun droite pa pb length color ->
+  Graphics.set_color color;
 
+  (* direction du cône *)
+  let v = sub pb pa in
+  let norm = sqrt (dot v v) in
+  let d = scale (1. /. norm) v in
+
+  (* vecteur directeur de la droite *)
+  let v = { x = 1.0; y = droite.m } in
+
+  (* choisir le sens qui va vers le cercle *)
+  let v =
+    if dot v d < 0. then scale (-1.) v else v
+  in
+
+  let x1 = pa.x +. length *. v.x in
+  let y1 = pa.y +. length *. v.y in
+
+  Graphics.moveto (int_of_float pa.x) (int_of_float pa.y);
+  Graphics.lineto (int_of_float x1) (int_of_float y1)
+
+let draw_relative_velocity a1 a2 =
+  let start = a1.pos in
+  let vr = relative_speed a1 a2 in
+  let endp = add start vr in
+
+  Graphics.set_color Graphics.magenta;
+  Graphics.moveto
+    (int_of_float start.x)
+    (int_of_float start.y);
+  Graphics.lineto
+    (int_of_float endp.x)
+    (int_of_float endp.y)
+
+let draw_tangente_petit_cercle = fun a1 a2 d tau ->
+  let (droite, t) = tangente_petit_cercle a1 a2 d tau in
+
+  let v = normalize { x = 1.0; y = droite.m } in
+  let length = 100.0 in
+
+  let p1 = add t (scale length v) in
+  let p2 = add t (scale (-.length) v) in
+
+  Graphics.set_color Graphics.cyan;
+  Graphics.moveto
+    (int_of_float p1.x)
+    (int_of_float p1.y);
+  Graphics.lineto
+    (int_of_float p2.x)
+    (int_of_float p2.y)
+
+
+
+let draw_cone = fun a1 a2 ->
+  let pa = a1.pos in
+  let pb = a2.pos in
+
+  (* rayon de sécurité *)
+  let radius = int_of_float d in
+
+  (* dessiner le cercle autour de a2 *)
+  Graphics.set_color Graphics.red;
+  Graphics.draw_circle
+    (int_of_float pb.x)
+    (int_of_float pb.y)
+    radius;
+
+  (* dessiner le petit cercle *)
+  let center = centre_petit_cercle a1 a2 tau in
+  Graphics.set_color Graphics.blue;
+  Graphics.draw_circle
+    (int_of_float (center.x))
+    (int_of_float (center.y))
+    (int_of_float (d /. tau));
+
+  (* calcul des tangentes *)
+  try
+    let d1, d2 = droites_cone pa pb d in
+    draw_droite_orientee d1 pa pb 1000.0 Graphics.green;
+    draw_droite_orientee d2 pa pb 1000.0 Graphics.green;
+    draw_relative_velocity a1 a2;
+    draw_tangente_petit_cercle a1 a2 d tau
+  with _ ->
+    ()
+  
+            (* fin dessins ORCA *)
+
+  
 
 let draw_all = fun airplanes random_add ->
   Graphics.clear_graph ();
@@ -41,6 +133,12 @@ let draw_all = fun airplanes random_add ->
   draw_button 280 700 100 30 "Restart" Graphics.red;
   (* Dessine les avions *)
   List.iter draw_airplane airplanes;
+
+   (* VISUALISATION DU CÔNE *)
+  (match airplanes with
+   | a1 :: a2 :: _ -> draw_cone a1 a2
+   | _ -> ());
+
   Graphics.synchronize ()
 
 
