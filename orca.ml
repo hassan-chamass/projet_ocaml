@@ -13,7 +13,10 @@ let nb_speed_samples = 10
 let relative_speed = fun a1 a2 ->
   sub a1.speed a2.speed
 
-
+let calc_v_pref = fun a ->
+  let dir = sub a.destination a.pos in
+  let dir_normalised = normalize dir in
+  scale (vmax) dir_normalised
 
 (* -------------------- géométrie du cône -------------------- *)
 
@@ -120,9 +123,11 @@ let droite_cone_plus_proche vr pa pb d =
 let point_cote_positif = fun a contrainte ->
   (* test si le point A (type vecteur) est positif pour une droite *)
   dot contrainte.n (sub a contrainte.point) >= 0.
-  
+
+
 let evalCst = fun cst v ->
   dot cst.n (sub v cst.point)
+
 
 let choisir_plan_separateur a_i a_j d tau =
   let vr = relative_speed a_i a_j in
@@ -143,6 +148,7 @@ let choisir_plan_separateur a_i a_j d tau =
     let pb = a_j.pos in
     let (_, n_c) = droite_cone_plus_proche vr pa pb d in
     creation_contrainte n_c vr
+
 
 let empty_ORCA = fun reachable_speeds cst_set ->
   (* Algorithme 3 *)
@@ -190,6 +196,7 @@ let reachable_speeds_inf () =
       ) speeds
     ) angles
   )
+
 
 let get_reachable_speeds = fun avion dt ->
   (*reachable speed with time infinity*)
@@ -306,9 +313,10 @@ let empty_ORCA = fun reachable_speeds cst_set ->
       best_v := v_test
     )
   ) reachable_speeds;
-  !best_v
+  !best_
 
-let select_speed_ORCA = fun cst_set v_pref reachable_speeds ->
+let select_speed_ORCA = fun cst_set v_pref ->
+  reachable_speeds = reachable_speeds_inf () in
   let s_i = List.filter (fun v_test ->
     List.for_all (fun cst -> (evalCst cst v_test) >= 0.) cst_set
   ) reachable_speeds in

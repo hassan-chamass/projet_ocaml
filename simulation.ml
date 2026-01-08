@@ -102,7 +102,7 @@ let update_airplanes = fun airplanes dt d tau ->
     ) [] airplanes in
 
     (* Calcul de v_pref vers la destination de l'avion [cite: 61] *)
-    let v_pref = scale 50. (normalize (sub a_i.destination a_i.pos)) in
+    let v_pref = calc_v_pref a_i in
 
     (* Ligne 6 : Sélection de la vitesse idéale ORCA [cite: 131] *)
     let v_prime_i = select_speed_ORCA cst_set v_pref reachable_full in

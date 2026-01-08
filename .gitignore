@@ -1,1 +1,15 @@
 visualisation.exe
+visualisation.cmi
+visualisation.cmo
+avion.cmi
+avion.cmo
+geometrie.cmi
+geometrie.cmo
+orca.cmi
+orca.cmo
+simulation.cmi
+simulation.cmo
+vecteurs.cmi
+vecteurs.cmo
+.vscode
+.vscode\settings.json
