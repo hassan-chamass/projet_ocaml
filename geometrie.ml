@@ -13,6 +13,10 @@ type droite = {
   n: float 
 }
 
+type contrainte = { 
+  n : vecteur; 
+  point : vecteur; 
+}
 
 let create_vector = fun x y ->
   {x=x; y=y}
@@ -42,3 +46,11 @@ let normalize = fun v ->
   let n = norm v in
   if n = 0. then v_zero ()
   else scale (1. /. n) v
+
+
+let creation_contrainte n point =
+  (* crée un objet de type contrainte à partir d'un point et d'une normale *)
+  { n = normalize n; point = point}
+
+let angle_from_vector = fun v ->
+  atan2 v.y v.x

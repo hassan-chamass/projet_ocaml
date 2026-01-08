@@ -160,7 +160,7 @@ let rec loop = fun airplanes current_id random_add ->
   (* Met à jour la simulation *)
   let airplanes = update_airplanes airplanes 0.01 in  
   print_airplanes airplanes;  (* <-- vérifie ici *)
-  Unix.sleepf 0.05;
+  Unix.sleepf 0.01;
 
   (* Spawn automatique si activé *)
   let airplanes, new_id =
@@ -226,3 +226,26 @@ ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg vecteurs.m
 .\visualisation.exe
 
 *)
+
+(*
+(* BOUCLE ALGORITHME 1 EXPLICITE *)
+let rec loop = fun airplanes random_mode ->
+  if not_all_arrived airplanes then (
+    let updated = update_airplanes airplanes 0.01 d tau in
+    (* Correction : on ajoute le deuxième argument (random_mode) *)
+    draw_all updated random_mode; 
+    Unix.sleepf 0.05;
+    loop updated random_mode
+  ) else (
+    print_endline "ALGO 1 TERMINE : TOUS LES AVIONS SONT ARRIVES";
+    draw_all airplanes random_mode
+  )
+
+let () =
+  Random.self_init ();
+  Graphics.open_graph " 1000x800";
+  Graphics.auto_synchronize false;
+  let initial_airplanes = generate_airplanes n_airplanes in
+  (* Correction : on lance la boucle avec les deux arguments attendus *)
+  loop initial_airplanes false
+  *)
