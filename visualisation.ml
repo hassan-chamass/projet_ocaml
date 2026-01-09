@@ -23,7 +23,17 @@ let draw_airplane = fun airplane ->
   
   (* Dessine la ligne/flèche *)
   Graphics.moveto (int_of_float x) (int_of_float y);
-  Graphics.lineto (int_of_float x_end) (int_of_float y_end)
+  Graphics.lineto (int_of_float x_end) (int_of_float y_end);
+
+  (* rayon de sécurité *)
+  let radius = int_of_float d in
+
+  (* dessiner le cercle autour de a*)
+  Graphics.set_color Graphics.red;
+  Graphics.draw_circle
+    (int_of_float airplane.pos.x)
+    (int_of_float airplane.pos.y)
+    radius
 
 
 

@@ -134,7 +134,7 @@ let choisir_plan_separateur a_i a_j d tau =
   (* CAS 1 : avions trop proches → contrainte radiale *)
   if dist2 <= d *. d then
     let n = normalize diff_pos in
-    creation_contrainte n vr
+    creation_contrainte n a_j.speed
 
   (* CAS 2 : ORCA normal *)
   else
