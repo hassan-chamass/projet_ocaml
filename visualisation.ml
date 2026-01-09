@@ -2,9 +2,10 @@ open Simulation
 open Avion
 open Geometrie
 open Orca
-let n_airplanes = 3 
+let n_airplanes = 2
 let tau = 5.0 
 let d = 60.0
+let dt = 0.01
 
 
 
@@ -124,6 +125,9 @@ let draw_cone = fun a1 a2 ->
             (* fin dessins ORCA *)
 
   
+let draw_dest = fun airplane ->
+  Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);
+  Graphics.lineto (int_of_float airplane.destination.x) (int_of_float airplane.destination.y)
 
 let draw_all = fun airplanes random_add ->
   Graphics.clear_graph ();
@@ -139,6 +143,9 @@ let draw_all = fun airplanes random_add ->
    | a1 :: a2 :: _ -> draw_cone a1 a2
    | _ -> ());
 
+  (match airplanes with
+    | a1 :: _ -> draw_dest a1
+    | _ -> ());
   Graphics.synchronize ()
 
 
@@ -154,11 +161,9 @@ let print_airplanes airplanes =
 
 
 
-
-
 let rec loop = fun airplanes current_id random_add ->
   (* Met à jour la simulation *)
-  let airplanes = update_airplanes airplanes 0.01 in  
+  let airplanes = update_airplanes airplanes dt d tau in  
   print_airplanes airplanes;  (* <-- vérifie ici *)
   Unix.sleepf 0.01;
 
@@ -241,11 +246,4 @@ let rec loop = fun airplanes random_mode ->
     draw_all airplanes random_mode
   )
 
-let () =
-  Random.self_init ();
-  Graphics.open_graph " 1000x800";
-  Graphics.auto_synchronize false;
-  let initial_airplanes = generate_airplanes n_airplanes in
-  (* Correction : on lance la boucle avec les deux arguments attendus *)
-  loop initial_airplanes false
   *)

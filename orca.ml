@@ -105,7 +105,9 @@ let closest = fun s v_pref ->
   | [] -> failwith "Liste vide dans closest"
   | h :: t ->
       List.fold_left (fun acc v ->
-        if norm (sub v v_pref) < norm (sub acc v_pref) then v else acc
+        (* if norm (sub v v_pref) <= norm (sub acc v_pref) then v else acc *)
+        (* on normalise les vecteurs puis on prend le plus grand produit scalaire pour avoir l'angle le plus proche*)
+        if dot (normalize v) (normalize v_pref) >= dot (normalize acc) (normalize v_pref) then v else acc
       ) h t
 
 
@@ -146,8 +148,9 @@ let choisir_plan_separateur a_i a_j d tau =
     (* Sinon : frontière du cône la plus proche *)
     let pa = a_i.pos in
     let pb = a_j.pos in
-    let (_, n_c) = droite_cone_plus_proche vr pa pb d in
-    creation_contrainte n_c vr
+    let (d, n_c) = droite_cone_plus_proche vr pa pb d in
+    let point_contrainte = {x = 1. ; y = d.m +. d.n} in
+    creation_contrainte n_c point_contrainte
 
 
 let empty_ORCA = fun reachable_speeds cst_set ->
@@ -198,7 +201,7 @@ let reachable_speeds_inf () =
   )
 
 
-let get_reachable_speeds = fun avion dt ->
+let reachable_speeds = fun avion dt ->
   (*reachable speed with time infinity*)
   let max_turn_rate = 10. *. Float.pi /. 180. in (* 10°/s *)
   let max_accel = 20.0  in
@@ -242,6 +245,15 @@ let get_reachable_speeds = fun avion dt ->
       ) speeds
     ) angles
   )
+
+let select_speed_ORCA = fun cst_set v_pref ->
+  let reachable_speeds = reachable_speeds_inf () in
+  let s_i = List.filter (fun v_test ->
+    List.for_all (fun cst -> (evalCst cst v_test) >= 0.) cst_set
+  ) reachable_speeds in
+  match s_i with
+  | [] -> empty_ORCA reachable_speeds cst_set
+  | _ -> closest s_i v_pref
 
 (*
 /// type contrainte = { n : vecteur; point : vecteur; }
@@ -315,7 +327,7 @@ let empty_ORCA = fun reachable_speeds cst_set ->
   ) reachable_speeds;
   !best_
 
-let select_speed_ORCA = fun cst_set v_pref ->
+///let select_speed_ORCA = fun cst_set v_pref ->
   reachable_speeds = reachable_speeds_inf () in
   let s_i = List.filter (fun v_test ->
     List.for_all (fun cst -> (evalCst cst v_test) >= 0.) cst_set
@@ -324,12 +336,6 @@ let select_speed_ORCA = fun cst_set v_pref ->
   | [] -> empty_ORCA reachable_speeds cst_set
   | _ -> closest s_i v_pref
 *)
-
-
-
-
-
-
 
 (*
 
