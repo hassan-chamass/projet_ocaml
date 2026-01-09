@@ -123,47 +123,5 @@ let update_airplanes = fun airplanes dt d tau ->
 
   (* Ligne 9 : Déplacement de chaque avion [cite: 133] *)
   List.iter (fun a -> move_airplane a dt) new_states;
-  
-  new_states (* On retourne l'état mis à jour*)
 
-  (*
-  (* Génère un cercle de vitesses possibles pour l'échantillonnage *)
-/// let get_reachable_speeds = fun vmin vmax dt ->
-  let speeds = ref [] in
-  for a = 0 to 30 do
-    let angle = (float_of_int a) *. (2. *. Float.pi /. 30.) in
-    for i = 0 to 10 do
-      let c = 
-      let v_norm = (float_of_int r) *. c + d in
-      speeds := { x = v_norm *. cos angle; y = v_norm *. sin angle } :: !speeds
-    done
-  done;
-  !speeds
-
-/// let update_airplanes = fun airplanes dt d tau ->
- let reachable_full = get_reachable_speeds () in (* Ri_infinity [cite: 109] *)
-
-  (* Lignes 4-5 : Pour chaque avion, on définit son ensemble de contraintes *)
-  let new_states = List.map (fun a_i ->
-    let cst_set = List.fold_left (fun acc a_j ->
-      if a_i.id = a_j.id then acc
-      else (choisir_plan_separateur a_i a_j d tau) :: acc (* Ligne 3 [cite: 128] *)
-    ) [] airplanes in
-
-    (* Calcul de v_pref vers la destination de l'avion [cite: 61] *)
-    let v_pref = calc_v_pref a_i in
-
-    (* Ligne 6 : Sélection de la vitesse idéale ORCA [cite: 131] *)
-    let v_prime_i = select_speed_ORCA cst_set v_pref reachable_full in
-    
-    (* Ligne 7 & 8 : v_i = Closest(Ri, v'_i) [cite: 132] *)
-    let new_v = closest reachable_full v_prime_i in
-    
-    { a_i with speed = new_v }
-  ) airplanes in
-
-  (* Ligne 9 : Déplacement de chaque avion [cite: 133] *)
-  List.iter (fun a -> move_airplane a dt) new_states;
-  
-  new_states (* On retourne l'état mis à jour*)
-  *)
+  List.filter in_window new_states;

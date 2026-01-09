@@ -129,12 +129,13 @@ let draw_dest = fun airplane ->
   Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);
   Graphics.lineto (int_of_float airplane.destination.x) (int_of_float airplane.destination.y)
 
-let draw_all = fun airplanes random_add ->
+let draw_all = fun airplanes random_add paused ->
   Graphics.clear_graph ();
   (* Dessine les boutons *)
   draw_button 10 700 100 30 "Add Plane" Graphics.yellow;
   draw_button 120 700 150 30 ("Random Add: " ^ (if random_add then "ON" else "OFF")) Graphics.cyan;
   draw_button 280 700 100 30 "Restart" Graphics.red;
+  draw_button 390 700 120 30 (if paused then "Play" else "Pause") Graphics.green;
   (* Dessine les avions *)
   List.iter draw_airplane airplanes;
 
@@ -161,9 +162,12 @@ let print_airplanes airplanes =
 
 
 
-let rec loop = fun airplanes current_id random_add ->
+let rec loop = fun airplanes current_id random_add paused ->
   (* Met à jour la simulation *)
-  let airplanes = update_airplanes airplanes dt d tau in  
+  let airplanes =
+    if paused then airplanes
+    else update_airplanes airplanes dt d tau
+  in
   print_airplanes airplanes;  (* <-- vérifie ici *)
   Unix.sleepf 0.01;
 
@@ -177,7 +181,7 @@ let rec loop = fun airplanes current_id random_add ->
   in
 
   (* Dessine tout *)
-  draw_all airplanes random_add;
+  draw_all airplanes random_add paused;
 
   (* Vérifie les clics *)
   if Graphics.button_down () then (
@@ -187,24 +191,29 @@ let rec loop = fun airplanes current_id random_add ->
       let new_plane = generate_one_airplane airplanes (new_id+1) in
       (* Attend que le bouton soit relâché pour éviter les multiples clics *)
       while Graphics.button_down () do () done;
-      loop (new_plane :: airplanes) (new_id + 1) random_add
+      loop (new_plane :: airplanes) (new_id + 1) random_add paused
     )
     (* Toggle random add *)
     else if is_inside x y 120 700 150 30 then(
       while Graphics.button_down () do () done;
-      loop airplanes new_id (not random_add)
+      loop airplanes new_id (not random_add) paused
     )
     (* Restart *)
     else if is_inside x y 280 700 100 30 then(
       while Graphics.button_down () do () done;
       let airplanes = generate_airplanes n_airplanes in
-      loop airplanes n_airplanes random_add
+      loop airplanes n_airplanes random_add paused
+    )
+    (* Pause/Play *)
+    else if is_inside x y 390 700 120 30 then(
+      while Graphics.button_down () do () done;
+      loop airplanes new_id random_add (not paused)
     )
     else
-      loop airplanes new_id random_add
+      loop airplanes new_id random_add paused
   )
   else
-    loop airplanes new_id random_add
+    loop airplanes new_id random_add paused
 
 
 
@@ -214,7 +223,7 @@ let () =
   Graphics.auto_synchronize false;
 
   let airplanes = generate_airplanes n_airplanes in
-  loop airplanes n_airplanes false
+  loop airplanes n_airplanes false false
 
 
 (*
@@ -232,18 +241,3 @@ ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg vecteurs.m
 
 *)
 
-(*
-(* BOUCLE ALGORITHME 1 EXPLICITE *)
-let rec loop = fun airplanes random_mode ->
-  if not_all_arrived airplanes then (
-    let updated = update_airplanes airplanes 0.01 d tau in
-    (* Correction : on ajoute le deuxième argument (random_mode) *)
-    draw_all updated random_mode; 
-    Unix.sleepf 0.05;
-    loop updated random_mode
-  ) else (
-    print_endline "ALGO 1 TERMINE : TOUS LES AVIONS SONT ARRIVES";
-    draw_all airplanes random_mode
-  )
-
-  *)
