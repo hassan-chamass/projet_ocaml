@@ -1,7 +1,4 @@
-(* ----------------------------------------------------------- *)
-(* Fichier: vector2D.ml *)
-(* Description: Module pour les opérations vectorielles en 2D. *)
-(* ----------------------------------------------------------- *)
+
 
 type vecteur = {
   mutable x : float;
@@ -39,8 +36,7 @@ let dot = fun v1 v2 ->
 let norm = fun v ->
   sqrt (dot v v)
 
-let direction = fun v ->
-  atan2 v.x v.y
+
 
 let normalize = fun v ->
   let n = norm v in

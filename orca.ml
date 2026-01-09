@@ -42,6 +42,7 @@ let droites_cone pa pb d =
 
 
 let normale_cone_exterieure droite pa pb =
+  (* normale extérieure au cône défini par la droite et les points pa et pb *)
   let v = { x = 1.0; y = droite.m } in
   let n1 = { x = -.v.y; y = v.x } in
   let n2 = { x = v.y; y = -.v.x } in
@@ -90,13 +91,13 @@ let tangente_petit_cercle a1 a2 d tau =
     let m = dir.y /. dir.x in
     let n = t.y -. m *. t.x in
     ({ m; n }, t)
+    
 
 let closest = fun s v_pref ->
   match s with
   | [] -> failwith "Liste vide dans closest"
   | h :: t ->
       List.fold_left (fun acc v ->
-        (* if norm (sub v v_pref) <= norm (sub acc v_pref) then v else acc *)
         (* on normalise les vecteurs puis on prend le plus grand produit scalaire pour avoir l'angle le plus proche*)
         if dot (normalize v) (normalize v_pref) >= dot (normalize acc) (normalize v_pref) then v else acc
       ) h t
@@ -172,6 +173,7 @@ let empty_ORCA = fun reachable_speeds cst_set ->
 
   
 let reachable_speeds_inf () =
+  (*reachable speed without limit*)
   let rec angles i acc =
     if i >= nb_angle_samples then acc
     else
@@ -202,7 +204,7 @@ let reachable_speeds_inf () =
 
 
 let reachable_speeds = fun avion dt ->
-  (*reachable speed with time infinity*)
+  (*reachable speed with time dt*)
   let max_turn_rate = 10. *. Float.pi /. 180. in (* 10°/s *)
   let max_accel = 20.0  in
 

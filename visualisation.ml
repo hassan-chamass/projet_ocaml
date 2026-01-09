@@ -6,7 +6,7 @@ let n_airplanes = 2
 let tau = 5.0 
 let d = 60.0
 let dt = 0.01
-
+let debug = false
 
 
 let draw_airplane = fun airplane ->
@@ -178,7 +178,7 @@ let rec loop = fun airplanes current_id random_add paused ->
     if paused then airplanes
     else update_airplanes airplanes dt d tau
   in
-  print_airplanes airplanes;  (* <-- vérifie ici *)
+  if debug then print_airplanes airplanes;  (* <-- vérifie ici *)
   Unix.sleepf 0.01;
 
   (* Spawn automatique si activé *)
