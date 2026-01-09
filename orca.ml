@@ -110,16 +110,20 @@ let closest = fun s v_pref ->
         if dot (normalize v) (normalize v_pref) >= dot (normalize acc) (normalize v_pref) then v else acc
       ) h t
 
+let violation_contrainte = fun v c ->
+  dot c.n (sub v c.point)
 
 let droite_cone_plus_proche vr pa pb d =
   (* Trouve la contrainte la plus proche de vr (quand le point coté négatif tangeante)*)
   let d1, d2 = droites_cone pa pb d in
   let n1 = normalize (normale_cone_exterieure d1 pa pb) in
   let n2 = normalize (normale_cone_exterieure d2 pa pb) in
-  let dist1 = abs_float (dot vr n1) in
-  let dist2 = abs_float (dot vr n2) in
+  let c1 = {n = n1 ; point = pa} in
+  let c2 = {n = n2 ; point = pb} in
+  let v1 = violation_contrainte vr c1 in
+  let v2 = violation_contrainte vr c2 in
 
-  if dist1 < dist2 then (d1, n1) else (d2, n2)
+  if v1 > v2 then (d1, n1) else (d2, n2)
 
 
 let point_cote_positif = fun a contrainte ->
@@ -141,16 +145,16 @@ let choisir_plan_separateur a_i a_j d tau =
   let contr = creation_contrainte n_t t in
 
   (* Test : avion a du côté positif de la tangente ? *)
-  if point_cote_positif a_i.pos contr then
+  if evalCst contr vr >= 0. then
     (* Tangente acceptée *)
     contr
   else
     (* Sinon : frontière du cône la plus proche *)
     let pa = a_i.pos in
     let pb = a_j.pos in
-    let (d, n_c) = droite_cone_plus_proche vr pa pb d in
-    let point_contrainte = {x = 1. ; y = d.m +. d.n} in
-    creation_contrainte n_c point_contrainte
+    let (_, n_c) = droite_cone_plus_proche vr pa pb d in
+    (*on prend la position de l'avion comme point appartenant à la droite*)
+    creation_contrainte n_c pa
 
 
 let empty_ORCA = fun reachable_speeds cst_set ->

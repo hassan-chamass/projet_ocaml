@@ -6,6 +6,7 @@ let window_width = 1000.0
 let window_height = 800.0
 let margin = 50.0   (* marge depuis les bords *)
 let min_distance = 30.0  (* distance minimale entre avions *)
+let safe_distance = min_distance +. 10.0
 
 
 let generate_airplanes = fun n ->
@@ -79,7 +80,7 @@ let rec generate_one_airplane = fun airplanes id ->
   if List.exists (fun a ->
     (* let ax, ay = a.pos.x a.pos.y in *)
     let d = norm (sub a.pos pos) in
-    d < min_distance
+    d < safe_distance
   ) airplanes then
     generate_one_airplane airplanes id
   else
