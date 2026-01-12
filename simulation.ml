@@ -88,5 +88,5 @@ let update_airplanes = fun airplanes dt d tau ->
   ) airplanes in
 
   (* Déplacement de chaque avion *)
-  let moved = List.map (fun a -> move_airplane a dt) new_states in
-  List.filter in_window moved
+  List.iter (fun a -> move_airplane a dt) new_states;
+  List.filter in_window new_states

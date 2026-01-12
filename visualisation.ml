@@ -4,7 +4,7 @@ open Geometrie
 open Orca
 let n_airplanes = 2
 let tau = 5.0 
-let d = 60.0
+let d = 40.0
 let dt = 0.01
 let debug = false
 
