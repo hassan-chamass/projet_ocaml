@@ -50,11 +50,13 @@ let rec generate_one_airplane = fun airplanes id ->
 
 
 let generate_airplanes = fun n ->
+  (* Initialise la simulation *)
   List.init n (fun i -> generate_one_airplane [] (i+1))
 
 
 
 let in_window = fun airplane ->
+  (* Vérifie si un avion est toujours dans la fenêtre *)
   let { x; y } = airplane.pos in
   x >= 0.0 && x <= 1000.0 &&
   y >= 0.0 && y <= 800.0
@@ -65,27 +67,26 @@ let update_airplanes = fun airplanes dt d tau ->
 
   (* Pour chaque avion, on définit son ensemble de contraintes *)
   let new_states = List.map (fun a_i ->
-    (* On prends les contrainte pour chaque couple d'avion *)
+    (* On prends les contraintes pour chaque couple d'avion *)
     let cst_set = List.fold_left (fun acc a_j ->
       if a_i.id = a_j.id then acc
-      else (choisir_plan_separateur a_i a_j d tau) :: acc (* Ligne 3 [cite: 128] *)
+      else (choisir_plan_separateur a_i a_j d tau) :: acc 
     ) [] airplanes in
 
-    (* Calcul de v_pref vers la destination de l'avion [cite: 61] *)
+    (* Calcul de v_pref vers la destination de l'avion *)
     let v_pref = calc_v_pref a_i in
 
-    (* Ligne 6 : Sélection de la vitesse idéale ORCA [cite: 131] *)
+    (* Sélection de la vitesse idéale ORCA *)
     let v_prime_i = select_speed_ORCA cst_set v_pref in
 
     let reachable = reachable_speeds a_i dt in
     
-    (* Ligne 7 & 8 : v_i = Closest(Ri, v'_i) [cite: 132] *)
+    (*  v_i = Closest(Ri, v'_i)  *)
     let new_v = closest reachable v_prime_i in
     
     { a_i with speed = new_v }
   ) airplanes in
 
-  (* Ligne 9 : Déplacement de chaque avion [cite: 133] *)
-  List.iter (fun a -> move_airplane a dt) new_states;
-
-  List.filter in_window new_states;
+  (* Déplacement de chaque avion *)
+  let moved = List.map (fun a -> move_airplane a dt) new_states in
+  List.filter in_window moved

@@ -1,8 +1,8 @@
 
 
 type vecteur = {
-  mutable x : float;
-  mutable y : float
+  x : float;
+  y : float
 }
 
 type droite = { 

@@ -45,7 +45,7 @@ let draw_button = fun x y w h label color ->
   Graphics.moveto (x + 10) (y + h / 2 - 5);
   Graphics.draw_string label
 
-                  (* Dessins pour ORCA *)
+(* Dessins pour ORCA *)
 let draw_droite_orientee = fun droite pa pb length color ->
   Graphics.set_color color;
 
@@ -132,12 +132,13 @@ let draw_cone = fun a1 a2 ->
   with _ ->
     ()
   
-            (* fin dessins ORCA *)
 
   
 let draw_dest = fun airplane ->
   Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);
   Graphics.lineto (int_of_float airplane.destination.x) (int_of_float airplane.destination.y)
+(* fin dessins ORCA *)
+
 
 let draw_all = fun airplanes random_add paused ->
   Graphics.clear_graph ();
@@ -160,8 +161,8 @@ let draw_all = fun airplanes random_add paused ->
   Graphics.synchronize ()
 
 
-(* Vérifie si le point (x,y) est dans le rectangle (bx,by,w,h) *)
 let is_inside = fun x y bx by bw bh ->
+(* Vérifie si le point (x,y) est dans le rectangle (bx,by,w,h) *)
   x >= bx && x <= bx + bw && y >= by && y <= by + bh
 
 
@@ -178,7 +179,7 @@ let rec loop = fun airplanes current_id random_add paused ->
     if paused then airplanes
     else update_airplanes airplanes dt d tau
   in
-  if debug then print_airplanes airplanes;  (* <-- vérifie ici *)
+  if debug then print_airplanes airplanes;  
   Unix.sleepf 0.01;
 
   (* Spawn automatique si activé *)
@@ -236,18 +237,4 @@ let () =
   loop airplanes n_airplanes false false
 
 
-(*
-Commandes pour lancer:
-
-opam switch create graphics 4.14.1
-opam install graphics
-opam switch graphics
-opam install ocamlfind
-
-(& opam env) -split '\r?\n' | ForEach-Object { Invoke-Expression $_ }
-
-ocamlfind ocamlc -o visualisation.exe -package graphics,unix -linkpkg vecteurs.ml avion.ml simulation.ml visualisation.ml 
-.\visualisation.exe
-
-*)
 
