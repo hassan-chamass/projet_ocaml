@@ -48,10 +48,42 @@ let rec generate_one_airplane = fun airplanes id ->
   else
     airplane
 
-
+(*
 let generate_airplanes = fun n ->
   (* Initialise la simulation *)
   List.init n (fun i -> generate_one_airplane [] (i+1))
+*)
+
+
+let generate_airplanes = fun n ->
+  if n = 2 then
+    (* Cas spécial : créer deux avions frontaux *)
+    let x1 = 0.0 in
+    let y1 = 400.0 in
+    let x2 = 1000.0 in
+    let y2 = 400.0 in
+    
+    let pos1 = {x = x1; y = y1} in
+    let pos2 = {x = x2; y = y2} in
+    
+    let target_pos1 = {x = x2; y = y2} in  (* A va vers B *)
+    let target_pos2 = {x = x1; y = y1} in  (* B va vers A *)
+    
+    let speed_norm = 80.0 in
+    
+    let direction1 = sub target_pos1 pos1 in
+    let speed1 = scale speed_norm (normalize direction1) in
+    
+    let direction2 = sub target_pos2 pos2 in
+    let speed2 = scale speed_norm (normalize direction2) in
+    
+    let airplane1 = create_airplane 1 pos1 speed1 target_pos1 in
+    let airplane2 = create_airplane 2 pos2 speed2 target_pos2 in
+    
+    [airplane1; airplane2]
+  else
+    (* Génération normale pour n != 2 *)
+    List.init n (fun i -> generate_one_airplane [] (i+1))
 
 
 

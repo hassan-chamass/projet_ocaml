@@ -7,12 +7,18 @@ let tau = 5.0
 let d = 40.0
 let dt = 0.01
 let debug = false
+let voir_dest = false
+let voir_cone = false
 
+let draw_dest = fun airplane ->
+  Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);
+  Graphics.lineto (int_of_float airplane.destination.x) (int_of_float airplane.destination.y)
 
 let draw_airplane = fun airplane ->
   let x, y = airplane.pos.x, airplane.pos.y in
   Graphics.set_color airplane.color;
 
+  if voir_dest then draw_dest airplane;
   (* Dessine le cercle de l'avion *)
   Graphics.fill_circle (int_of_float x) (int_of_float y) 5;
   
@@ -134,9 +140,7 @@ let draw_cone = fun a1 a2 ->
   
 
   
-let draw_dest = fun airplane ->
-  Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);
-  Graphics.lineto (int_of_float airplane.destination.x) (int_of_float airplane.destination.y)
+
 (* fin dessins ORCA *)
 
 
@@ -151,13 +155,11 @@ let draw_all = fun airplanes random_add paused ->
   List.iter draw_airplane airplanes;
 
    (* VISUALISATION DU CÔNE *)
+  if voir_cone then
   (match airplanes with
    | a1 :: a2 :: _ -> draw_cone a1 a2
    | _ -> ());
 
-  (match airplanes with
-    | a1 :: _ -> draw_dest a1
-    | _ -> ());
   Graphics.synchronize ()
 
 
