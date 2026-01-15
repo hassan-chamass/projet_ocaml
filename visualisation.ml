@@ -4,11 +4,11 @@ open Geometrie
 open Orca
 let n_airplanes = 2
 let tau = 5.0 
-let d = 40.0
+let d = 60.0
 let dt = 0.01
 let debug = false
 let voir_dest = false
-let voir_cone = false
+let voir_cone = true
 
 let draw_dest = fun airplane ->
   Graphics.moveto (int_of_float airplane.pos.x) (int_of_float airplane.pos.y);

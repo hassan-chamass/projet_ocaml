@@ -116,18 +116,6 @@ let tangente_petit_cercle a1 a2 d tau =
     ({ m; n }, t)
 
 
-(*
-let closest = fun s v_pref ->
-  match s with
-  | [] -> failwith "Liste vide dans closest"
-  | h :: t ->
-      List.fold_left (fun acc v ->
-        (* on normalise les vecteurs puis on prend le plus grand produit scalaire pour avoir l'angle le plus proche*)
-        if dot (normalize v) (normalize v_pref) >= dot (normalize acc) (normalize v_pref) then v else acc
-      ) h t
-*)
-
-
 
 let closest = fun s v_pref ->
   match s with
@@ -223,101 +211,6 @@ let choisir_plan_separateur a_i a_j d tau =
         let point_proj = { x = x_proj; y = y_proj } in
         
         creation_contrainte n_c point_proj
-(*
-let choisir_plan_separateur a_i a_j d tau =
-  let vr = relative_speed a_i a_j in
-  let diff_pos = sub a_i.pos a_j.pos in
-  let dist2 = dot diff_pos diff_pos in
-
-   Printf.printf "Avion %d vs %d: dist=%.1f, vr_norm=%.1f\n" 
-    a_i.id a_j.id (sqrt dist2) (norm vr);
-  (* CAS 1 : avions trop proches → contrainte radiale *)
-  if dist2 <= d *. d then
-    let n = normalize diff_pos in
-    creation_contrainte n a_j.speed
-
-  (* CAS 2 : ORCA normal *)
-  else
-    let centre = centre_petit_cercle a_i a_j tau in
-    let (droite, t) = tangente_petit_cercle a_i a_j d tau in
-    let n_t = normale_tangente_exterieure t centre in
-    
-    let vr_projected = sub t a_i.pos in
-    let c_tau = sub vr_projected vr in
-    
-    let point_contrainte = add a_i.speed (scale 0.5 c_tau) in
-    let contr = creation_contrainte n_t point_contrainte in
-
-    if evalCst contr vr >= 0. then
-      contr
-    else
-      let pa = a_i.pos in
-      let pb = a_j.pos in
-      let (_, n_c) = droite_cone_plus_proche vr pa pb d in
-      creation_contrainte n_c a_i.speed
-*)
-
-(*
-let choisir_plan_separateur a_i a_j d tau =
-  let vr = relative_speed a_i a_j in
-  let diff_pos = sub a_i.pos a_j.pos in
-  let dist2 = dot diff_pos diff_pos in
-
-  Printf.printf "Avion %d vs %d: dist=%.1f, vr_norm=%.1f\n" 
-    a_i.id a_j.id (sqrt dist2) (norm vr);
-
-  (* CAS 1 : avions trop proches → contrainte radiale *)
-  if dist2 <= d *. d then
-    let n = normalize diff_pos in
-    (* Contrainte radiale : la vitesse doit être telle qu'on s'éloigne *)
-    creation_contrainte n a_i.speed
-
-  (* CAS 2 : ORCA normal *)
-  else
-    let centre = centre_petit_cercle a_i a_j tau in
-    let rayon = d /. tau in
-    
-    (* Position de vr dans l'espace des vitesses relatives *)
-    let pos_vr_abs = add a_i.pos vr in  (* position absolue de vr *)
-    let dir_centre_vers_vr = sub pos_vr_abs centre in
-    let dist_centre_vr = norm dir_centre_vers_vr in
-    
-    (* Vérifier si vr est DANS la zone interdite δ^-_τ *)
-    if dist_centre_vr < rayon then
-      (* vr est DANS la zone interdite *)
-      (* On projette vr sur le bord du cercle *)
-      let u = scale (1. /. dist_centre_vr) dir_centre_vers_vr in
-      let t = add centre (scale rayon u) in  (* point projeté sur δ_τ *)
-      
-      (* c_τ = vecteur de vr (absolu) vers son projeté t *)
-      let c_tau = sub t pos_vr_abs in
-      
-      (* Normale extérieure = direction radiale au point t *)
-      let n_t = normalize u in
-      
-      (* Point de contrainte = v_A + c_τ/2 selon le sujet *)
-      let point_contrainte = add a_i.speed (scale 0.5 c_tau) in
-      
-      creation_contrainte n_t point_contrainte
-      
-    else
-      (* vr est HORS de la zone interdite *)
-      (* Il faut quand même créer une contrainte pour éviter d'y entrer *)
-      (* On utilise la tangente au cercle depuis vr *)
-      
-      (* Trouver la droite du cône la plus proche de vr *)
-      let pa = a_i.pos in
-      let pb = a_j.pos in
-      
-      try
-        let (_, n_c) = droite_cone_plus_proche vr pa pb d in
-        (* Le point de contrainte est v_A car pas de correction nécessaire *)
-        creation_contrainte n_c a_i.speed
-      with _ ->
-        (* En cas d'erreur (géométrie dégénérée), contrainte radiale *)
-        let n = normalize diff_pos in
-        creation_contrainte n a_i.speed
-*)
 
 
 
